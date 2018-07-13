@@ -1,0 +1,19 @@
+{
+  "name": "web3d_map",
+  "version": "1.0.0",
+  "description": "See 3d visualization of geojson on Open Street Maps",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "OSM Buildings'",
+    "Mapbox",
+    "Gl",
+    "js",
+    "node",
+    "geojson"
+  ],
+  "author": "Ankit",
+  "license": "ISC"
+}
