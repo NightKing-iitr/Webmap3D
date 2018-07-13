@@ -3,18 +3,15 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const firebase = require("firebase");
 
+//const googleStorage = require('@google-cloud/storage');
+//const Multer = require('multer');
+
+
 const home = require('./routes/home');
 const config = require('./config/keys');
 
 //initialize firebase
 firebase.initializeApp(config);
-
-/* Get a reference to the storage service, 
-which is used to create references in your storage bucket*/
-var storage = firebase.storage();
-
-// Create a storage reference from our storage service
-var storageRef = storage.ref();//points to root reference
 
 //init app
 var app = express();
