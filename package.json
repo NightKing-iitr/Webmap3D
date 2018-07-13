@@ -15,5 +15,10 @@
     "geojson"
   ],
   "author": "Ankit",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3",
+    "firebase": "^5.2.0",
+    "path": "^0.12.7"
+  }
 }
