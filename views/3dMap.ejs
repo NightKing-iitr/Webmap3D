@@ -1,0 +1,92 @@
+<html>
+    <head>
+            <link href="https://cdn.osmbuildings.org/3.2.11/OSMBuildings.css" rel="stylesheet">
+            <script src="https://cdn.osmbuildings.org/3.2.11/OSMBuildings.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/17.2.0/Tween.js"></script>
+            <style>
+                * {margin: 0; padding: 0;}html, body {height: 100%;}#map {width: 100%; height: 100%;}.button-wrapper{  position: absolute;  top:1em;  left:1em;  font-family: Arial, sans-serif;  font-size:12px;}.button-wrapper .label{  font-weight: bold;  color:#555;  margin-bottom:.5em;}.button-wrapper button{  padding: .7em 1em;  background: white;  font-weight:bold;  border:none;  box-shadow: 0 2px 3px rgba(0,0,0,.1);  border-radius:2px;  z-index:99;  cursor: pointer;  background:#dd5050;  color:white;}.button-wrapper button:hover{  box-shadow: 0 3px 4px rgba(0,0,0,.3);}.button-wrapper button:active{  box-shadow: 0 1px 2px rgba(0,0,0,.05);}.button-wrapper button:focus{  outline:none}
+            </style>
+    </head>
+    <body>
+        <div id="map"></div><div class="button-wrapper">  <div class="label">Fly to:</div>  <button data-point="a">Point A</button>  <button data-point="b">Point B</button></div>
+    </body>
+    <script>
+        var pointData = {
+    a: function a() {
+      return { latitude: 28.6315, longitude: 77.2179, rotation: 0, zoom: 17, tilt: 25 };
+    },
+    b: function b() {
+      //return { latitude: 52.5155, longitude: 13.3914, rotation: -30, zoom: 17.2, tilt: 50 };
+      return { latitude: 28.6315, longitude: 77.2179, rotation: -30, zoom: 17.2, tilt: 50 };
+      //return { latitude: 27.5987, longitude: 75.1364, rotation: -30, zoom: 17.2, tilt: 50 };
+    }
+  };
+  // map creation
+  var initMapConfig = pointData.a();
+  var map = new OSMBuildings({
+    position: { latitude: initMapConfig.latitude, longitude: initMapConfig.longitude },
+    zoom: initMapConfig.zoom,
+    rotation: initMapConfig.rotation,
+    tilt: initMapConfig.tilt,
+    minZoom: 16,
+    maxZoom: 22,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+  }).appendTo(document.getElementById('map'));
+  
+  // add tiles
+  //map.addMapTiles('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png');
+  map.addMapTiles('https://maps.tilehosting.com/styles/streets/{z}/{x}/{y}.png?key=SfWK9VVrAmulA6kXcRVR');
+  //map.addMapTiles('https://api.mapbox.com/styles/v1/mapbox/streets-v9.html?fresh=true&title=true&access_token=pk.eyJ1IjoibmlnaHRraW5nLWlpdHIiLCJhIjoiY2pqZTY3aWVsMGQ4aDNxbXNkMzU1OTc0ZCJ9.0yxEiuUMmrFoyQSnQRtWfQ#0.0/0.000000/0.000000/0');
+  // add custom geojson (https://gist.github.com/moklick/9861cea20a97d7517365)
+  //map.addGeoJSON('https://cdn.rawgit.com/moklick/9861cea20a97d7517365/raw/0ab6652b3d86225272aa75ecb346f6fb2406742b/osmb-testdata.geo.json');
+  map.addGeoJSON('https://api.myjson.com/bins/17ax06');
+  //map.addGeoJSON('');  
+
+  // button handling
+  var animationTime = 2000;
+  var buttons = document.querySelectorAll('button');
+  var currentPoint = 'a';
+  var tween = null;
+  var isAnimating = false;
+  
+  [].forEach.call(buttons, function (button) {
+    button.addEventListener('click', handleButton, false);
+  });
+  
+  function handleButton() {
+    var pointTo = this.getAttribute('data-point');
+    var pointFrom = pointTo === 'a' ? 'b' : 'a';
+  
+    if (currentPoint === pointTo || isAnimating) {
+      return false;
+    }
+  
+    currentPoint = pointTo;
+    startAnimation(pointData[pointFrom](), pointData[pointTo]());
+  }
+  
+  function startAnimation(valuesFrom, valuesTo) {
+    if (tween) {
+      tween.stop();
+    }
+  
+    isAnimating = true;
+    tween = new TWEEN.Tween(valuesFrom).to(valuesTo, animationTime).onUpdate(function () {
+      console.log(this);
+      map.setPosition({ latitude: valuesFrom.latitude, longitude: valuesFrom.longitude });
+      map.setRotation(valuesFrom.rotation);
+      map.setZoom(valuesFrom.zoom);
+      map.setTilt(valuesFrom.tilt);
+    }).onComplete(function () {
+      isAnimating = false;
+    }).start();
+  
+    requestAnimationFrame(animate);
+  }
+  
+  function animate(time) {
+    requestAnimationFrame(animate);
+    TWEEN.update(time);
+  }
+    </script>
+</html>
